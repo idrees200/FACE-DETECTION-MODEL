@@ -16,13 +16,15 @@ In the realm of artificial intelligence and computer vision, the SnapSense proje
 **A little about VGG-16**
 The VGG-16 architecture consists of 16 layers, including 13 convolutional layers and 3 fully connected layers. Each convolutional block typically contains two or three 3x3 convolutional layers followed by a max-pooling layer. The fully connected layers serve as the classifier, with the final layer outputting probabilities for each class in the classification task. This simple yet deep architecture enables effective feature extraction and classification in image recognition tasks.
 
-![Alt Text](image_url)
+![Alt Text](VGG-16.jpg)
 
 
 ## Code and Results
 
 **1. Data Preparation:**
 - Captured images of project members' faces and manually annotated them using the LabelMe library, drawing bounding boxes around the faces.
+  ![Alt Text](G1.png)
+
 - Initially, 180 images were annotated and saved in a folder called "labels."
 - Created three folders for training, testing, and validation data and split the dataset with a 70-30 ratio, resulting in 125 images for training and 27 for testing.
 
@@ -53,10 +55,7 @@ augmentor = alb.Compose([alb.RandomCrop(width=450, height=450),
                        bbox_params=alb.BboxParams(format='albumentations', 
                                                   label_fields=['class_labels']))
 ```
-
-
-
-
+  ![Alt Text](G5.png)
 
 **3. Model Implementation:**
 - Used VGG-16 CNN model pre-trained on ImageNet.
@@ -66,20 +65,30 @@ vgg = VGG16(include_top=False)
 ```
 
 **4. Model Architecture:**
-- Implemented two branches of VGG-16 for classification and bounding box regression.
+-  This function builds a model architecture combining VGG-16 with separate branches for classification and bounding box regression. It utilizes global max pooling on VGG features, followed by fully connected layers for classification and regression tasks. Finally, it returns the combined model for face tracking.
+  
 ```python
-def build_model():
-    input_layer = Input(shape=(120, 120, 3))
+    input_layer = Input(shape=(120,120,3))
     vgg = VGG16(include_top=False)(input_layer)
-    # Classification Model
+
+    # Classification Model  
+    f1 = GlobalMaxPooling2D()(vgg)
+    class1 = Dense(2048, activation='relu')(f1)
+    class2 = Dense(1, activation='sigmoid')(class1)
+    
     # Bounding box model
+    f2 = GlobalMaxPooling2D()(vgg)
+    regress1 = Dense(2048, activation='relu')(f2)
+    regress2 = Dense(4, activation='sigmoid')(regress1)
+    
     facetracker = Model(inputs=input_layer, outputs=[class2, regress2])
     return facetracker
 ```
 
+
 **5. Training Results:**
 - Trained the model for 6 epochs with training and validation loss recorded.
-- Fr the last epoch follwing values were recorded
+- Fr the last epoch following values were recorded
 ```python
 Epochs: 6
 Total Loss: 0.5074
@@ -89,11 +98,19 @@ Validation Total Loss: 4.3729
 Validation Classification Loss: 2.1030
 Validation Regression Loss: 3.3214
 ```
+
 **Insights from Loss Values Of all epochs:**
 
 - The decreasing trend of total loss and its components (classification and regression loss) over epochs indicates that the model is learning and improving its performance.
 - A low validation loss suggests that the model generalizes well to unseen data, indicating its effectiveness in real-world scenarios.
 - Spikes or fluctuations in loss values may indicate issues such as overfitting or underfitting, which need to be addressed by adjusting model architecture or training parameters, which happened in previous training so we improved our dataset by making it more diverse and changing our epoch from 4 to 6.
+
+  **Plotting**
+  
+  ![Alt Text](G7.png)
+
+
+  
 
 **6. Model Saving and Loading:**
 - Saved the trained model for later use.
@@ -107,6 +124,7 @@ facetracker = load_model('facetracker.h5')
 
 **7. Live Testing:**
 - Tested the model on live camera feed, producing accurate results.
+
 
 
 ## Future Scope:
