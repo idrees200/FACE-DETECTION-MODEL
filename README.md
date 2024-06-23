@@ -1,5 +1,5 @@
 # SnapSense- Live Face Recognition
-
+ 
 ## Introduction 
 In the realm of artificial intelligence and computer vision, the SnapSense project stands as a pioneering endeavor aiming to develop an advanced face recognition system. Utilizing Python and a meticulously curated dataset comprising our team's faces, SnapSense tackles the ever-present challenges of real-time dataset collection, model accuracy, and system customization. This project's architecture, spanning data collection, preprocessing, model design, training, evaluation, and deployment stages, embodies a comprehensive approach to face detection. By leveraging cutting-edge techniques and technologies, SnapSense heralds a new era in facial recognition technology, poised to revolutionize industries ranging from surveillance to biometrics and beyond.
 
